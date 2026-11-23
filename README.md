@@ -51,6 +51,15 @@ only one of the two would have looked fine.
 - [Design](#design)
 - [What SoroProbe deliberately does not do](#what-soroprobe-deliberately-does-not-do)
 
+The same map is available from the binary itself, so you can jump straight to
+the command you need without scrolling:
+
+```bash
+soroprobe --help          # every command, one line of description each
+soroprobe help check      # the full reference for one command
+soroprobe help simulate
+```
+
 ## Versions this targets
 
 Soroban's simulation and state model change between protocol versions, so the
@@ -59,10 +68,20 @@ memory. Verified **2026-08-07**:
 
 | Component | Version | Notes |
 | --- | --- | --- |
-| Go SDK | `github.com/stellar/go-stellar-sdk` v0.7.1 | The former `github.com/stellar/go` is **deprecated and archived**; the Go tool itself reports `module github.com/stellar/go is deprecated: Use github.com/stellar/go-stellar-sdk instead`. |
+| Go SDK | `github.com/stellar/go-stellar-sdk` v0.8.0 | The former `github.com/stellar/go` is **deprecated and archived**; the Go tool itself reports `module github.com/stellar/go is deprecated: Use github.com/stellar/go-stellar-sdk instead`. |
 | Go | 1.25 | Required by the SDK. `GOTOOLCHAIN=auto` lets an older local `go` fetch it. |
 | Stellar RPC | `simulateTransaction`, `getLedgerEntries`, `getLatestLedger` | Accessed through the SDK's `clients/rpcclient`. |
 | Network | Testnet, **protocol 27** | Ledger close time measured at 5.00s/ledger over 19 consecutive ledgers. |
+
+Check the two versions you can read locally against that table:
+
+```bash
+$ go version
+go version go1.25.0 linux/amd64
+
+$ grep 'stellar/go-stellar-sdk' go.mod
+	github.com/stellar/go-stellar-sdk v0.8.0
+```
 
 Two details that commonly trip up code written against older docs:
 
@@ -106,6 +125,20 @@ docker compose up
 `RPC_URL`, `NETWORK_PASSPHRASE` and `SOROVAULT_URL` are passed through from
 the environment (or a `.env` file); the defaults target the public testnet, so
 the stack comes up with no configuration at all.
+
+Confirm the install works before relying on it — neither command needs a
+configuration or a secret key, and the second should exit **0**:
+
+```bash
+$ soroprobe version
+v0.2.0      # a `make build` prints the commit it was built from instead
+
+$ soroprobe check CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC --fn decimals
+…
+result PASS
+$ echo $?
+0
+```
 
 If your local Go is older than 1.25, nothing needs to change: `GOTOOLCHAIN=auto`
 is Go's default and will fetch the right toolchain on first build.

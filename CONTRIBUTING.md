@@ -190,4 +190,18 @@ it directly.
 ## License
 
 By contributing you agree that your contributions are licensed under Apache-2.0,
-the same license as the project.
+the same license as the project. There is no CLA to sign and no per-file header
+to add — [LICENSE](LICENSE) covers the whole repository. If you do want to mark
+a new file, use the standard SPDX identifier:
+
+```go
+// SPDX-License-Identifier: Apache-2.0
+```
+
+The same applies to anything you add: a new dependency has to be Apache-2.0
+compatible, and its license is in the module cache after `go mod download`:
+
+```bash
+$ head -1 "$(go mod download -json github.com/stretchr/testify | jq -r '.Dir')/LICENSE"
+MIT License
+```
